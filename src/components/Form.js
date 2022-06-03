@@ -1,30 +1,48 @@
-import React from 'react';
+import React, { useState }  from 'react';
 
-const Form = ({ setInputText, todos, setTodos, inputText, setStatus }) => {
+// onChange={inputTextHandler} 
 
-    const inputTextHandler = (e) => {   
-        setInputText(e.target.value); 
-    };
+const Form = ({ todos, addItems, inputText}) => {
+   
+    const [name, setName] = useState('')
+    
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        setName(e.target.value);
+        addItems({
+            key: (Math.random()*1000).toString(),
+            text:name,
+            status: false
+        });
+    }
+    
 
     const submitTodoHandler = (e) => {
         e.preventDefault();
-        setTodos([
-            ...todos, {text:inputText, completed: false, id: Math.random() * 1000}
-        ]);
-        setInputText('')
+        
+        
+        
+
+        setName('');
+
+        // setTodos([
+        //     ...todos, {text:inputText, completed: false, id: Math.random() * 1000}
+        // ]);
+        // setInputText('')
     };
 
     const statusHandler = (e) => {
-        setStatus(e.target.value);
+        // updateStatusTodos(e.target.value);
     }
 
     return(
         <form>
-            <input value={inputText} onChange={inputTextHandler} type="text" className="todo-input" />
+            <input value={name} onChange={handleChange} type="text" className="todo-input" />
             <button onClick={submitTodoHandler} className="todo-button" type="submit">
                 <i className="fas fa-plus-square"></i>
-
             </button>
+
             <div className="select">
                 <select onChange={statusHandler} name="todos" className="filter-todo">
                     <option value="all">All</option>

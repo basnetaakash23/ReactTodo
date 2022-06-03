@@ -1,31 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 
-const Todo = ({text, todo, todos, setTodos}) =>
+const Todo = ({todos, todo, completeTodos, deleteTodos}) =>
 {
 
+
     //events
-    const deleteHandler = () => {
-        setTodos(todos.filter(el => el.id !== todo.id))
+    const deleteHandler = (e) => {
+        let el = e.target.value;
+        console.log("deleteA");
+        console.log(todo.text);
+        deleteTodos(todo, todos);
+        
       
     };
-    if(todo.text == ""){
-        setTodos(todos.filter(el => el.id !== todo.id))
+    if(todo.text === ""){
+       
     }
-    const completeHandler = () =>{
-        setTodos(todos.map(item => {
-            if(item.id === todo.id){
-                return{
-                    ...item, completed: !item.completed
-                };
-            }
-            return item;
-        })
-    );
+    const completeHandler = (el) =>{
+        completeTodos(todo);
+    
 };
 
     return(
         <div className="todo">
-            <li className={`todo-item ${todo.completed ? "completed" : ""}`}>{text}</li>
+            <li className={`todo-item ${todo.status ? "completed" : ""}`}>{todo.text}</li>
             <button onClick={completeHandler} className="complete-btn">
                 <i className="fas fa-check"></i>
             </button>
