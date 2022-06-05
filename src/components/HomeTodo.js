@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect }  from "react";
 import TodoList from './TodoList'
+import { useNavigate } from 'react-router-dom'
 
 const HomeTodo = ({todos, text_item, handleChange, addItems, statusHandler, deleteTodos, completeTodos}) => {
+	let navigate = useNavigate();
+	useEffect(() => {
+        let authToken = sessionStorage.getItem('Auth Token')
+
+        if (authToken) {
+            navigate('/home')
+        }
+
+        if (!authToken) {
+            navigate('/login')
+        }
+    }, [])
 	return (
 		<div className="App">
         <header>

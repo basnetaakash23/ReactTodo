@@ -1,9 +1,15 @@
 import './App.css';
 import React from 'react';
 
-import Form from './components/Form';
+// import Form from './components/Form';
 // import TodoList from './components/TodoList';
 import HomeTodo from './components/HomeTodo';
+import Form from './components/LoginForm';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import { app } from './components/firebase-config';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { withRouter } from '.components/withRouter';
+
 
 class App extends React.Component{
   constructor(props){
@@ -16,8 +22,13 @@ class App extends React.Component{
         text:'',
         status:''
       },
-      inputText:''
+      inputText:'',
+      user: {
+          email:'',
+          password:''
+      }
     }
+   
     this.addItems = this.addItems.bind(this);
     this.updateStatusTodos = this.updateStatusTodos.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
@@ -25,7 +36,10 @@ class App extends React.Component{
     this.statusHandler = this.statusHandler.bind(this);
     this.deleteTodos = this.deleteTodos.bind(this);
     this.completeTodos = this.completeTodos.bind(this);
+    this.loginregisterUser = this.loginregisterUser.bind(this);
   }
+
+
   addItems(e){
     e.preventDefault();
     const item = this.state.newItem;
@@ -86,9 +100,61 @@ class App extends React.Component{
         }))
   }
 
+  loginregisterUser(id, email, password, navigate){
+    console.log("LoginRegister");
+    console.log(email);
+    console.log(password);
+    
+    const authentication = getAuth();
+      createUserWithEmailAndPassword(authentication, email, password)
+        .then((response) => {
+          navigate('/home')
+          sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+        })
+    
+    this.setState({
+      user:{
+        email:'',
+        password:''
+      }
+    })
+  }
+
   render(){
-    return ( 
-          <HomeTodo todos = {this.state.todos} text_item = {this.state.newItem.text} handleChange = {this.handleChange} addItems = {this.addItems} statusHandler = {this.statusHandler} deleteTodos = {this.deleteTodos} completeTodos = {this.completeTodos}/>
+    return (
+      <Router>
+          <div>
+            <>
+              <Routes>
+                <Route path='/login' element={
+                  <Form 
+                    title = "Login"
+                    email = {this.state.user.email}
+                    password = {this.state.user.password}
+                    loginregisterUser={this.loginregisterUser}
+                      id = {1}
+                  />
+                } />
+                <Route path='/register' element={<Form 
+                    title = "Register"
+                    email = {this.state.user.email}
+                    password = {this.state.user.password}
+                    loginregisterUser={this.loginregisterUser}
+                      id = {2}
+                  />} />
+
+
+                <Route
+                  path='/home'
+                  element={
+                    <HomeTodo todos = {this.state.todos} text_item = {this.state.newItem.text} handleChange = {this.handleChange} addItems = {this.addItems} statusHandler = {this.statusHandler} deleteTodos = {this.deleteTodos} completeTodos = {this.completeTodos}/>
+                   }
+                />
+              </Routes>
+            </>
+            
+          </div>
+        </Router>
           );
     }
 

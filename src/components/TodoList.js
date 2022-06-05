@@ -1,7 +1,7 @@
 import React from "react";
 //components
 
-import Todo from "./Todo"
+import Todo from "./Todo";
 
 const TodoList = ({ todos, deleteTodos, completeTodos}) => {
 
