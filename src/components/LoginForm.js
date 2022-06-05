@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom'
 
-export default function BasicTextFields({title, email, password, loginregisterUser,id}) {
+export default function BasicTextFields({title, loginregisterUser,id}) {
     const [state, setState] = useState({email_:'',password_:''});
     
 
@@ -24,9 +24,7 @@ export default function BasicTextFields({title, email, password, loginregisterUs
         console.log(state.email_);
         if(state.email_ !== '' && state.password_ !== ''){
             loginregisterUser(id,state.email_, state.password_,navigate);
-            email = '';
-            password = ''
-
+            setState({email_:'',password_:''})
         }
         
     }

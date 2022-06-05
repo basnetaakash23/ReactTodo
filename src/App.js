@@ -3,12 +3,11 @@ import React from 'react';
 
 // import Form from './components/Form';
 // import TodoList from './components/TodoList';
-import HomeTodo from './components/HomeTodo';
-import Form from './components/LoginForm';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+
 import { app } from './components/firebase-config';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
-import { withRouter } from '.components/withRouter';
+import FindInitialPage from './components/FindInitialPage';
+
 
 
 class App extends React.Component{
@@ -22,12 +21,10 @@ class App extends React.Component{
         text:'',
         status:''
       },
-      inputText:'',
-      user: {
-          email:'',
-          password:''
-      }
+      inputText:''
+      
     }
+
    
     this.addItems = this.addItems.bind(this);
     this.updateStatusTodos = this.updateStatusTodos.bind(this);
@@ -106,11 +103,35 @@ class App extends React.Component{
     console.log(password);
     
     const authentication = getAuth();
-      createUserWithEmailAndPassword(authentication, email, password)
+      if(id == 2){
+        createUserWithEmailAndPassword(authentication, email, password)
         .then((response) => {
           navigate('/home')
           sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+        }).catch((error) => {
+           if(error.code === 'auth/wrong-password'){
+              console.log('Please check the Password');
+            }
+            if(error.code === 'auth/user-not-found'){
+              console.log('Please check the Email');
+            }
         })
+      }
+      else{
+        signInWithEmailAndPassword(authentication, email, password)
+        .then((response) => {
+          navigate('/home')
+          sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+        }).catch((error) => {
+         if(error.code === 'auth/wrong-password'){
+            console.log('Please check the Password');
+          }
+          if(error.code === 'auth/user-not-found'){
+            console.log('Please check the Email');
+          }
+          })
+      }
+      
     
     this.setState({
       user:{
@@ -122,39 +143,18 @@ class App extends React.Component{
 
   render(){
     return (
-      <Router>
-          <div>
-            <>
-              <Routes>
-                <Route path='/login' element={
-                  <Form 
-                    title = "Login"
-                    email = {this.state.user.email}
-                    password = {this.state.user.password}
-                    loginregisterUser={this.loginregisterUser}
-                      id = {1}
-                  />
-                } />
-                <Route path='/register' element={<Form 
-                    title = "Register"
-                    email = {this.state.user.email}
-                    password = {this.state.user.password}
-                    loginregisterUser={this.loginregisterUser}
-                      id = {2}
-                  />} />
-
-
-                <Route
-                  path='/home'
-                  element={
-                    <HomeTodo todos = {this.state.todos} text_item = {this.state.newItem.text} handleChange = {this.handleChange} addItems = {this.addItems} statusHandler = {this.statusHandler} deleteTodos = {this.deleteTodos} completeTodos = {this.completeTodos}/>
-                   }
-                />
-              </Routes>
-            </>
-            
+      <div>
+          <FindInitialPage
+            loginregisterUser = {this.loginregisterUser}
+            todos = {this.state.todos}
+            text_item = {this.state.newItem.text}
+            handleChange = {this.handleChange}
+            addItems = {this.addItems}
+            statusHandler = {this.statusHandler}
+            deleteTodos = {this.deleteTodos}
+            completeTodos = {this.completeTodos}
+          />
           </div>
-        </Router>
           );
     }
 
