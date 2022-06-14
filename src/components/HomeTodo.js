@@ -1,5 +1,6 @@
 import React, { useEffect }  from "react";
 import TodoList from './TodoList'
+import Logout from './LogOut'
 import { useNavigate } from 'react-router-dom'
 
 const HomeTodo = ({todos, text_item, handleChange, addItems, statusHandler, deleteTodos, completeTodos}) => {
@@ -17,6 +18,7 @@ const HomeTodo = ({todos, text_item, handleChange, addItems, statusHandler, dele
     }, [])
 	return (
 		<div className="App">
+        <Logout />
         <header>
             <h1>ToDo List</h1>
         </header>

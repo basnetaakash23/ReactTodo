@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
 import HomeTodo from './HomeTodo';
+import Logout from './LogOut';
 import Form from './LoginForm';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 
@@ -31,7 +32,7 @@ const FindInitialPage = ({loginregisterUser, todos, text_item, handleChange, add
                 <Route path='/register' element={<Form 
                     title = "Register"
                     loginregisterUser={loginregisterUser}
-                      id = {2}
+                    id = {2}
                   />} />
 
 
@@ -41,6 +42,11 @@ const FindInitialPage = ({loginregisterUser, todos, text_item, handleChange, add
                     <HomeTodo todos = {todos} text_item = {text_item} handleChange = {handleChange} addItems = {addItems} statusHandler = {statusHandler} deleteTodos = {deleteTodos} completeTodos = {completeTodos}/>
                    }
                 />
+
+                <Route
+                  path='/logout'
+                  element = {<Logout />}
+                  />
               </Routes>
             </>
             

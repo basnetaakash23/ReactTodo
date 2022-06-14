@@ -4,8 +4,17 @@ import React from 'react';
 // import Form from './components/Form';
 // import TodoList from './components/TodoList';
 
-import { app } from './components/firebase-config';
+import { app, db } from './components/firebase-config';
+
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import {
+getFirestore,
+query,
+getDocs,
+collection,
+where,
+addDoc, doc, setDoc, getDoc} from "firebase/firestore";
+
 import FindInitialPage from './components/FindInitialPage';
 
 
@@ -21,7 +30,8 @@ class App extends React.Component{
         text:'',
         status:''
       },
-      inputText:''
+      inputText:'',
+      userName:''
       
     }
 
@@ -37,12 +47,15 @@ class App extends React.Component{
   }
 
 
-  addItems(e){
+  async addItems(e){
     e.preventDefault();
     const item = this.state.newItem;
     if(item.text !== ""){
       console.log("Added now");
       const _item = [...this.state.todos, item]
+      const cityRef = doc(db, this.state.userName, this.state.userName);
+      await setDoc(cityRef, { todos: this.state.todos }, { merge: true });
+
       this.setState({
         todos: _item,
         newItem : {
@@ -58,6 +71,37 @@ class App extends React.Component{
       console.log(todo);
       console.log("P");
     });
+  }
+  async deleteTodos(todo, todos_){
+
+    this.setState({
+      todos: todos_.filter(el => el.key !== todo.key),
+      newItem : {
+        key:'',
+        text:'',
+        status:''
+        }
+    })
+
+    const cityRef = doc(db, this.state.userName, this.state.userName);
+    await setDoc(cityRef, { todos: this.state.todos }, { merge: true });
+
+  }
+
+  async completeTodos(todo){
+    const st = !todo.status;
+    
+    this.setState(this.state.todos.map(item => {
+            if(item.key == todo.key){
+                item.status= st
+              }
+        }))
+    const cityRef = doc(db, this.state.userName, this.state.userName);
+    await setDoc(cityRef, { todos: this.state.todos }, { merge: true });
+
+    
+
+    
   }
   updateStatusTodos(){}
   deleteItem(){}
@@ -75,61 +119,50 @@ class App extends React.Component{
 
   statusHandler(e){}
 
-  deleteTodos(todo, todos_){
+  
 
-    this.setState({
-      todos: todos_.filter(el => el.key !== todo.key),
-      newItem : {
-        key:'',
-        text:'',
-        status:''
-        }
-    })
-  }
-
-  completeTodos(todo){
-    const st = !todo.status;
-    
-    this.setState(this.state.todos.map(item => {
-            if(item.key == todo.key){
-                item.status= st
-              }
-        }))
-  }
-
-  loginregisterUser(id, email, password, navigate){
+  async loginregisterUser(id, email, password, navigate){
     console.log("LoginRegister");
     console.log(email);
     console.log(password);
     
     const authentication = getAuth();
       if(id == 2){
-        createUserWithEmailAndPassword(authentication, email, password)
-        .then((response) => {
-          navigate('/home')
-          sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
-        }).catch((error) => {
-           if(error.code === 'auth/wrong-password'){
-              console.log('Please check the Password');
-            }
-            if(error.code === 'auth/user-not-found'){
-              console.log('Please check the Email');
-            }
-        })
+        try{
+        const res = await createUserWithEmailAndPassword(authentication, email, password)
+        navigate('/home')
+        sessionStorage.setItem('Auth Token', res._tokenResponse.refreshToken)
+        
+        // this.state.user = res.user;
+        const ref = doc(collection(db, res.user.uid));
+        this.setState({userName : res.user.uid});
+        await setDoc(res.user.uid,{
+          email: email,
+          reference: ref,
+          todos: []
+        });
+      } catch (err) {
+        console.error(err);
+        alert(err.message);
       }
-      else{
-        signInWithEmailAndPassword(authentication, email, password)
-        .then((response) => {
-          navigate('/home')
-          sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
-        }).catch((error) => {
-         if(error.code === 'auth/wrong-password'){
-            console.log('Please check the Password');
-          }
-          if(error.code === 'auth/user-not-found'){
-            console.log('Please check the Email');
-          }
-          })
+    }
+        // .then((response) => {
+        //   navigate('/home')
+        //   sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+
+       
+      
+    else{
+      const res = await signInWithEmailAndPassword(authentication, email, password);
+      sessionStorage.setItem('Auth Token', res._tokenResponse.refreshToken);
+      this.setState({userName : res.user.uid});
+      const docRef = doc(db, res.user.uid, res.user.uid);
+      const docSnap = await getDoc(docRef);
+      console.log("Retreiveing Data");
+      console.log(docSnap.data().todos);
+      console.log("Query Snapshot");
+      navigate('/home');
+      this.setState({todos:docSnap.data().todos});
       }
       
     
