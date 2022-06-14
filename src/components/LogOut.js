@@ -13,10 +13,11 @@ const LogOut = () => {
 		const auth = getAuth();
 		signOut(auth).then(() => {
 		  // Sign-out successful.
+		  navigate('/login');
 		}).catch((error) => {
 		  // An error happened.
 		});
-		navigate('/login');
+		
 	}
 	
 
