@@ -1,15 +1,25 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+
+import AuthService from "../services/auth-service";
 
 export default function BasicTextFields({title, loginregisterUser,id}) {
     const [state, setState] = useState({email_:'',password_:''});
     
-
     let navigate = useNavigate();
+    useEffect(() => {
+        let authToken = sessionStorage.getItem('Auth Token')
+
+        if (authToken) {
+            navigate('/home')
+        }
+    
+     }, [navigate])
+     
     const handleChange = (e) => {
         e.preventDefault();
         const value = e.target.value;
@@ -23,7 +33,10 @@ export default function BasicTextFields({title, loginregisterUser,id}) {
     const submitHandler = () => {
         console.log(state.email_);
         if(state.email_ !== '' && state.password_ !== ''){
-            loginregisterUser(id,state.email_, state.password_,navigate);
+            AuthService.login(state.email_, state.password_).then(()=>{
+                navigate('/home');
+                }
+            )
             setState({email_:'',password_:''})
         }
         
