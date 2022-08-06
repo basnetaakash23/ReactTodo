@@ -1,35 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import './Todo.css';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
-const Todo = ({todos, todo, completeTodos, deleteTodos}) =>
-{
 
-
-    //events
-    const deleteHandler = (e) => {
-        let el = e.target.value;
-        console.log("deleteA");
-        console.log(todo.text);
-        deleteTodos(todo, todos);
-        
-      
-    };
-    if(todo.text === ""){
-       
-    }
-    const completeHandler = (el) =>{
-        completeTodos(todo);
+const Todo = ({rowData}) => {
+    console.log(rowData);
     
-};
-
+    
     return(
         <div className="todo">
-            <li className="todo-item">{todo.text}</li>
-            <button onClick={completeHandler} className="complete-btn">
-                <i className="fas fa-check"></i>
-            </button>
-            <button onClick={deleteHandler} className="trash-btn">
-                <i className="fas fa-trash"></i>
-            </button>
+            <div className="ag-theme-alpine ag-style">
+                <AgGridReact
+                    pagination={true}
+                    paginationAutoPageSize={true}
+                    defaultColDef={{ flex: 1 }}
+                    rowHeight={60}
+                    rowData={rowData}>
+
+                    <AgGridColumn field="userName" headerName="User" sortable={true} filter={true} cellClass="vertical-middle" />
+                    <AgGridColumn field="text" headerName="Todo" sortable={true} filter={true} cellClass="vertical-middle" />
+                    <AgGridColumn field="status" headerName="State" sortable={true} filter={true} cellClass="vertical-middle" />
+                </AgGridReact>
+            </div>
         </div>
     );
 };

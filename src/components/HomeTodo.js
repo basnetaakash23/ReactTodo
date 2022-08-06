@@ -1,5 +1,5 @@
 import React, { useEffect, useState }  from "react";
-import TodoList from './TodoList'
+import Todo from './Todo'
 import Logout from './LogOut'
 import { useNavigate } from 'react-router-dom'
 import AuthService from "../services/auth-service"
@@ -7,7 +7,7 @@ import ToDoDataService from "../services/todo.service"
 
 const HomeTodo = ({text_item, statusHandler, deleteTodos, completeTodos}) => {
 	let navigate = useNavigate();
-	const [todos, setTodos] = useState([]);
+    const [rowData, setRowData] = useState([]);
     const [todo, setTodo] = useState({text:'', status:false, userName:''});
 	useEffect(() => {
 	    let currentUser = AuthService.getCurrentUser();
@@ -19,7 +19,8 @@ const HomeTodo = ({text_item, statusHandler, deleteTodos, completeTodos}) => {
             ToDoDataService.getAll()
             .then(response => {
                 console.log(response);
-                setTodos(response.data);
+                setRowData(response.data);
+                
             })
             .catch(error => {
                 console.log(error);
@@ -38,12 +39,14 @@ const HomeTodo = ({text_item, statusHandler, deleteTodos, completeTodos}) => {
             status: false
         }       
         );
+
+        
     };
 
     const addItems = () => {
         if(todo.text !== ''){
             ToDoDataService.create(todo);
-            setTodos([...todos,todo]);
+            setRowData([...rowData, todo]);
         }
     }
 
@@ -72,7 +75,7 @@ const HomeTodo = ({text_item, statusHandler, deleteTodos, completeTodos}) => {
             </div>
         </form>
 
-        <TodoList todos={todos} deleteTodos = {deleteTodos} completeTodos = {completeTodos}/>
+        <Todo rowData={rowData}/>
         </div>
 		);
 };
