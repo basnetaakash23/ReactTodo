@@ -1,13 +1,14 @@
-import http from "../http-common";
+
+import axios from "axios";
 import authHeader from "./auth-header";
 
 const API_URL = "http://localhost:8080";
 class ToDoDataService {
   getAll() {
-    return http.get(API_URL+"/todos/", {headers:authHeader() });
+    return axios.get(API_URL+"/todos/", {headers:authHeader() });
   }
   create(data) {
-    return http.post(API_URL+"/todos/", data,{headers:authHeader() } );
+    return axios.post(API_URL+"/todos/", data,{headers:authHeader() } );
   }
 }
 export default new ToDoDataService();
