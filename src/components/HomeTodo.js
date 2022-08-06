@@ -1,21 +1,53 @@
-import React, { useEffect }  from "react";
+import React, { useEffect, useState }  from "react";
 import TodoList from './TodoList'
 import Logout from './LogOut'
 import { useNavigate } from 'react-router-dom'
+import AuthService from "../services/auth-service"
+import ToDoDataService from "../services/todo.service"
 
-const HomeTodo = ({todos, text_item, handleChange, addItems, statusHandler, deleteTodos, completeTodos}) => {
+const HomeTodo = ({text_item, statusHandler, deleteTodos, completeTodos}) => {
 	let navigate = useNavigate();
+	const [todos, setTodos] = useState([]);
+    const [todo, setTodo] = useState({text:'', status:false, userName:''});
 	useEffect(() => {
-        let authToken = sessionStorage.getItem('Auth Token')
+	    let currentUser = AuthService.getCurrentUser();
 
-        if (authToken) {
-            navigate('/home')
+
+        if (currentUser) {
+            console.log(currentUser);
+//            navigate('/home')
+            ToDoDataService.getAll()
+            .then(response => {
+                console.log(response);
+                setTodos(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
         }
 
-        if (!authToken) {
+        if (!currentUser) {
             navigate('/login')
         }
     }, [])
+
+    const handleChange = (e) => {
+        setTodo({
+            text: e.target.value,
+            userName: AuthService.getCurrentUser().username,
+            status: false
+        }       
+        );
+    };
+
+    const addItems = () => {
+        if(todo.text !== ''){
+            ToDoDataService.create(todo);
+            setTodos([...todos,todo]);
+        }
+    }
+
+
 	return (
 		<div className="App">
         <Logout />
@@ -24,7 +56,7 @@ const HomeTodo = ({todos, text_item, handleChange, addItems, statusHandler, dele
         </header>
 
         <form>
-            <input value={text_item} onChange={handleChange} type="text" className="todo-input" />
+            <input value={todo.text} onChange={handleChange} type="text" className="todo-input" />
             <button onClick={addItems} className="todo-button" type="submit">
                 <i className="fas fa-plus-square"></i>
             </button>

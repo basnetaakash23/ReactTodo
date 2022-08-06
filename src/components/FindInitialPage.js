@@ -1,35 +1,25 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+
 import HomeTodo from './HomeTodo';
 import Logout from './LogOut';
-import Form from './LoginForm';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
+import { Routes, Route} from 'react-router-dom'
 
-const FindInitialPage = ({loginregisterUser, todos, text_item, handleChange, addItems, statusHandler, deleteTodos, completeTodos}) => {
-  let navigate = useNavigate();
-  useEffect(() => {
-    let authToken = sessionStorage.getItem('Auth Token')
-
-    if (authToken) {
-      navigate('/home')
-    }
-    else{
-      navigate('/login')
-    }
-  }, [])
-
+const FindInitialPage = ({loginregisterUser, todos, text_item, deleteTodos, completeTodos}) => {
+  
   return (
           <div>
             <>
               <Routes>
                 <Route path='/login' element={
-                  <Form 
+                  <LoginForm 
                     title = "Login"                  
                     loginregisterUser={loginregisterUser}
                       id = {1}
                   />
                 } />
-                <Route path='/register' element={<Form 
+                <Route path='/register' element={<RegisterForm 
                     title = "Register"
                     loginregisterUser={loginregisterUser}
                     id = {2}
@@ -39,7 +29,7 @@ const FindInitialPage = ({loginregisterUser, todos, text_item, handleChange, add
                 <Route
                   path='/home'
                   element={
-                    <HomeTodo todos = {todos} text_item = {text_item} handleChange = {handleChange} addItems = {addItems} statusHandler = {statusHandler} deleteTodos = {deleteTodos} completeTodos = {completeTodos}/>
+                    <HomeTodo todos = {todos} text_item = {text_item} deleteTodos = {deleteTodos} completeTodos = {completeTodos}/>
                    }
                 />
 
@@ -47,6 +37,8 @@ const FindInitialPage = ({loginregisterUser, todos, text_item, handleChange, add
                   path='/logout'
                   element = {<Logout />}
                   />
+
+                
               </Routes>
             </>
             
